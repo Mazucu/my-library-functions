@@ -15,10 +15,9 @@ class Shelf extends React.Component {
                   <Book
                     name={book.title}
                     author={book.authors}
-                    url={book.imageLinks.smallThumbnail}
+                    url={book.imageLinks ? book.imageLinks.smallThumbnail : ""}
                     id={book.id}
                     shelf={book.shelf}
-                    savedBooks={this.props.savedBooks}
                     updateBook={this.props.updateBook}
                   />
                 </li>

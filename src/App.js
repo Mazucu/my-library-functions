@@ -19,7 +19,6 @@ class BooksApp extends React.Component {
 
   updateBook = (book, shelf) => {
     const isBookInLib = this.isBookinMyLib(book.id);
-    console.log("esta el libro?", isBookInLib);
 
     if (!isBookInLib) {
       this.addBook(book, shelf);
@@ -51,28 +50,25 @@ class BooksApp extends React.Component {
     return false;
   };
   addBook = (book, shelf) => {
-    console.log("adding book", book);
     BooksAPI.get(book.id).then((book) => {
-      console.log("book is", book);
       book.shelf = shelf;
-
       this.setState((currentState) => ({
-        bookList: currentState.bookList.concat(book),
+        bookList: [...currentState.bookList, book],
       }));
     });
   };
 
   searchBook = (query) => {
     if (query) {
-      console.log("query is", query);
       BooksAPI.search(query).then((bookSearch) => {
         if (bookSearch.error) {
           console.log("no books found");
           this.setState({ searchResults: [] });
-        } else
+        } else {
           this.setState({
             searchResults: bookSearch,
           });
+        }
       });
     }
   };

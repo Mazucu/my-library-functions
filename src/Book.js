@@ -13,21 +13,6 @@ class Book extends React.Component {
       e.target.value
     );
     this.setState({ bookShelf: e.target.value });
-    //console.log(this.props.id, e.target.value);
-  };
-
-  getShelf = () => {
-    console.log("getShelf");
-    return "wantToRead";
-    /*this.props.savedBooks.filter((savedBook) => {
-      if (savedBook.id === bookID) {
-        console.log(savedBook.shelf);
-        //this.props.shelf = savedBook.shelf;
-        this.setState({ bookShelf: savedBook.shelf });
-        //return this.state.bookShelf;
-      }
-      return "none";
-    });*/
   };
 
   render() {
@@ -58,13 +43,7 @@ class Book extends React.Component {
           </div>
         </div>
         <div className="book-title">{this.props.name}</div>
-        <div className="book-authors">
-          {this.props.author}
-
-          {/*           {this.props.author.length > 1
-            ? this.props.author.map((author) => author + " ")
-            : this.props.author} */}
-        </div>
+        <div className="book-authors">{this.props.author}</div>
       </div>
     );
   }
