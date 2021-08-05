@@ -11,10 +11,9 @@ class BooksApp extends React.Component {
     searchResults: [],
   };
 
-  componentDidMount() {
-    BooksAPI.getAll().then((bookList) => {
-      return this.setState({ bookList });
-    });
+  async componentDidMount() {
+    const bookList = await BooksAPI.getAll();
+    this.setState({ bookList });
   }
 
   updateBook = (book, shelf) => {
@@ -49,13 +48,12 @@ class BooksApp extends React.Component {
     }
     return false;
   };
-  addBook = (book, shelf) => {
-    BooksAPI.get(book.id).then((book) => {
-      book.shelf = shelf;
-      this.setState((currentState) => ({
-        bookList: [...currentState.bookList, book],
-      }));
-    });
+  addBook = async (book, shelf) => {
+    const bookDetails = await BooksAPI.get(book.id);
+    bookDetails.shelf = shelf;
+    this.setState((currentState) => ({
+      bookList: [...currentState.bookList, bookDetails],
+    }));
   };
 
   searchBook = (query) => {

@@ -28,12 +28,14 @@ class BookSearch extends React.Component {
   };
 
   render() {
+    let noResult = false;
+    this.props.searchBooks.length === 0
+      ? (noResult = true)
+      : (noResult = false);
     return (
       <div className="search-books">
         <div className="search-books-bar">
-          <Link to="/">
-            <button className="close-search">Close</button>
-          </Link>
+          <Link className="close-search" to="/" />
 
           <div className="search-books-input-wrapper">
             <input
@@ -50,11 +52,15 @@ class BookSearch extends React.Component {
               books={this.props.searchBooks.map((book) => {
                 if (this.isBookInMyLib(book)) {
                   book.shelf = this.getShelf(book);
+                } else {
+                  book.shelf = "none";
                 }
                 return book;
               })}
               updateBook={this.props.updateBook}
             />
+
+            {noResult && <h3>No results for this search</h3>}
           </div>
         )}
       </div>
