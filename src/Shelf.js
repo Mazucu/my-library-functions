@@ -1,14 +1,14 @@
 import React from "react";
-import "./App.css";
 import Book from "./Book";
+// You need to import a CSS file only once
 
-function Shelf(props) {
+function Shelf({ name, books, updateBook }) {
   return (
     <div className="bookshelf">
-      <h2 className="bookshelf-title"> {props.name}</h2>
+      <h2 className="bookshelf-title"> {name}</h2>
       <div className="bookshelf-books">
         <ol className="books-grid">
-          {props.books.map((book) => {
+          {books.map((book) => {
             return (
               <li key={book.id}>
                 <Book
@@ -17,7 +17,7 @@ function Shelf(props) {
                   url={book.imageLinks ? book.imageLinks.smallThumbnail : ""}
                   id={book.id}
                   shelf={book.shelf}
-                  updateBook={props.updateBook}
+                  updateBook={updateBook}
                 />
               </li>
             );
@@ -27,33 +27,5 @@ function Shelf(props) {
     </div>
   );
 }
-/** 
-class Shelf extends React.Component {
-  render() {
-    return (
-      <div className="bookshelf">
-        <h2 className="bookshelf-title"> {this.props.name}</h2>
-        <div className="bookshelf-books">
-          <ol className="books-grid">
-            {this.props.books.map((book) => {
-              return (
-                <li key={book.id}>
-                  <Book
-                    name={book.title}
-                    author={book.authors}
-                    url={book.imageLinks ? book.imageLinks.smallThumbnail : ""}
-                    id={book.id}
-                    shelf={book.shelf}
-                    updateBook={this.props.updateBook}
-                  />
-                </li>
-              );
-            })}
-          </ol>
-        </div>
-      </div>
-    );
-  }
-}
-*/
+
 export default Shelf;
