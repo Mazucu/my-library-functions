@@ -1,26 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import * as BooksAPI from "./BooksAPI";
 import "./App.css";
 import { Route } from "react-router-dom";
 import BookList from "./BookList";
 import BookSearch from "./BookSearch";
 
-class BooksApp extends React.Component {
-  state = {
-    bookList: [],
-    searchResults: [],
-  };
+function BooksApp(props) {
+  const [bookList, setBookList] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
 
-  async componentDidMount() {
+  useEffect(async () => {
     const bookList = await BooksAPI.getAll();
-    this.setState({ bookList });
-  }
+    setBookList(bookList);
+  }, []);
 
-  updateBook = (book, shelf) => {
-    const isBookInLib = this.isBookinMyLib(book.id);
-
+  const updateBook = (book, shelf) => {
+    const isBookInLib = isBookinMyLib(book.id);
     if (!isBookInLib) {
-      this.addBook(book, shelf);
+      addBook(book, shelf);
     }
 
     BooksAPI.update(
@@ -29,75 +26,64 @@ class BooksApp extends React.Component {
       },
       shelf
     ).then(
-      this.setState((prevState) => ({
-        bookList: prevState.bookList.filter((b) => {
+      setBookList(
+        bookList.filter((b) => {
           if (b.id === book.id) {
             return (b.shelf = shelf);
           } else {
             return b;
           }
-        }),
-      }))
+        })
+      )
     );
   };
 
-  isBookinMyLib = (book) => {
+  const isBookinMyLib = (book) => {
     const checkBookName = (obj) => obj.id === book;
-    if (this.state.bookList.some(checkBookName)) {
+    if (bookList.some(checkBookName)) {
       return true;
     }
     return false;
   };
-  addBook = async (book, shelf) => {
+  const addBook = async (book, shelf) => {
     const bookDetails = await BooksAPI.get(book.id);
     bookDetails.shelf = shelf;
-    this.setState((currentState) => ({
-      bookList: [...currentState.bookList, bookDetails],
-    }));
+    setBookList([...bookList, bookDetails]);
   };
 
-  searchBook = (query) => {
+  const searchBook = (query) => {
     if (query) {
       BooksAPI.search(query).then((bookSearch) => {
         if (bookSearch.error) {
           console.log("no books found");
-          this.setState({ searchResults: [] });
+          setSearchResults([]);
         } else {
-          this.setState({
-            searchResults: bookSearch,
-          });
+          setSearchResults(bookSearch);
         }
       });
     }
   };
 
-  render() {
-    return (
-      <div className="app">
-        <Route
-          exact
-          path="/"
-          render={() => (
-            <BookList
-              books={this.state.bookList}
-              updateBook={this.updateBook}
-            />
-          )}
-        />
-        <Route
-          path="/search"
-          render={() => (
-            <BookSearch
-              searchBooks={this.state.searchResults}
-              savedBooks={this.state.bookList}
-              search={this.searchBook}
-              updateBook={this.updateBook}
-            />
-          )}
-        />
-      </div>
-    );
-  }
+  return (
+    <div className="app">
+      <Route
+        exact
+        path="/"
+        render={() => <BookList books={bookList} updateBook={updateBook} />}
+      />
+      <Route
+        path="/search"
+        render={() => (
+          <BookSearch
+            searchBooks={searchResults}
+            savedBooks={bookList}
+            search={searchBook}
+            updateBook={updateBook}
+          />
+        )}
+      />
+    </div>
+  );
 }
 
 export default BooksApp;
