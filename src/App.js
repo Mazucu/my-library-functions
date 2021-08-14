@@ -5,13 +5,25 @@ import { Route } from "react-router-dom";
 import BookList from "./BookList";
 import BookSearch from "./BookSearch";
 
-function BooksApp(props) {
+function BooksApp() {
   const [bookList, setBookList] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
-  useEffect(async () => {
-    const bookList = await BooksAPI.getAll();
-    setBookList(bookList);
+  useEffect(() => {
+    // the callback effect function cannot be async, this is how you do it:
+    async function getBooks() {
+      // using async/await you have to wrap the call in try/catch to not crash the app in case you have a bad result
+      // for example you can show an error message in the catch block
+      try {
+        const bookList = await BooksAPI.getAll();
+        setBookList(bookList);
+      } catch(error) {
+        console.log(error)
+        // setError(error.message)
+      }
+    }
+
+    getBooks()
   }, []);
 
   const updateBook = (book, shelf) => {
@@ -20,31 +32,24 @@ function BooksApp(props) {
       addBook(book, shelf);
     }
 
-    BooksAPI.update(
-      {
-        id: book.id,
-      },
-      shelf
-    ).then(
+    BooksAPI.update({ id: book.id }, shelf).then(
       setBookList(
-        bookList.filter((b) => {
-          if (b.id === book.id) {
-            return (b.shelf = shelf);
-          } else {
-            return b;
+        bookList.filter(_book => {
+          if (_book.id === book.id) {
+            return (_book.shelf = shelf);
           }
+
+          // no need to say else because the function will quit if the "if" is fulfuilled
+          return _book;
         })
       )
     );
   };
 
   const isBookinMyLib = (book) => {
-    const checkBookName = (obj) => obj.id === book;
-    if (bookList.some(checkBookName)) {
-      return true;
-    }
-    return false;
+    return bookList.some((_book) => _book.id === book) // you were duplication what .some() already does
   };
+
   const addBook = async (book, shelf) => {
     const bookDetails = await BooksAPI.get(book.id);
     bookDetails.shelf = shelf;
@@ -66,22 +71,17 @@ function BooksApp(props) {
 
   return (
     <div className="app">
-      <Route
-        exact
-        path="/"
-        render={() => <BookList books={bookList} updateBook={updateBook} />}
-      />
-      <Route
-        path="/search"
-        render={() => (
-          <BookSearch
-            searchBooks={searchResults}
-            savedBooks={bookList}
-            search={searchBook}
-            updateBook={updateBook}
-          />
-        )}
-      />
+      <Route exact path="/">
+        <BookList books={bookList} updateBook={updateBook} />
+      </Route>
+      <Route path="/search"/>
+        <BookSearch
+          searchBooks={searchResults}
+          savedBooks={bookList}
+          search={searchBook}
+          updateBook={updateBook}
+        />
+      </Route>
     </div>
   );
 }
